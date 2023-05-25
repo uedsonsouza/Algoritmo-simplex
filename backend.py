@@ -1,11 +1,12 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-# generates an empty matrix with adequate size for variables and constraints.
+# gera uma matriz vazia com tamanho adequado para variáveis e restrições.
 def gen_matrix(var,cons):
     tab = np.zeros((cons+1, var+cons+2))
     return tab
 
-# checks the furthest right column for negative values ABOVE the last row. If negative values exist, another pivot is required.
+# verifica a coluna mais à direita para valores negativos ACIMA da última linha. Se existirem valores negativos, é necessário outro pivo.
 def next_round_r(table):
     m = min(table[:-1,-1])
     if m>= 0:
@@ -13,7 +14,7 @@ def next_round_r(table):
     else:
         return True
 
-# checks that the bottom row, excluding the final column, for negative values. If negative values exist, another pivot is required.
+# verifica se a linha inferior, excluindo a coluna final, tem valores negativos. Se existirem valores negativos, é necessário outro pivo.
 def next_round(table):
     lr = len(table[:,0])
     m = min(table[lr-1,:-1])
@@ -22,50 +23,50 @@ def next_round(table):
     else:
         return True
 
-# Similar to next_round_r function, but returns row index of negative element in furthest right column
+# Semelhante à função next_round_r, mas devolve o índice da linha do elemento negativo na coluna mais à direita.
 def find_neg_r(table):
     # lc = number of columns, lr = number of rows
     lc = len(table[0,:])
-    # search every row (excluding last row) in final column for min value
+    # Procurar em todas as linhas (excepto na última linha) da coluna final pelo valor mínimo
     m = min(table[:-1,lc-1])
     if m<=0:
-        # n = row index of m location
+        # n = índice de linha da localização m
         n = np.where(table[:-1,lc-1] == m)[0][0]
     else:
         n = None
     return n
 
-#returns column index of negative element in bottom row
+#Devolve o índice de coluna do elemento negativo na linha inferior
 def find_neg(table):
     lr = len(table[:,0])
     m = min(table[lr-1,:-1])
     if m<=0:
-        # n = row index for m
+        # n = índice de linha para m
         n = np.where(table[lr-1,:-1] == m)[0][0]
     else:
         n = None
     return n
 
-# locates pivot element in tableu to remove the negative element from the furthest right column.
+# localiza o elemento pivot na tabelau para remover o elemento negativo da coluna mais à direita.
 def loc_piv_r(table):
         total = []
-        # r = row index of negative entry
+        # r = índice de linha da entrada negativa
         r = find_neg_r(table)
-        # finds all elements in row, r, excluding final column
+        # encontra todos os elementos na linha, r, excluindo a coluna final
         row = table[r,:-1]
-        # finds minimum value in row (excluding the last column)
+        # encontra o valor mínimo na linha (excluindo a última coluna)
         m = min(row)
-        # c = column index for minimum entry in row
+        # c = índice de coluna para a entrada mínima na linha
         c = np.where(row == m)[0][0]
-        # all elements in column
+        # todos os elementos da coluna
         col = table[:-1,c]
-        # need to go through this column to find smallest positive ratio
+        # é necessário percorrer esta coluna para encontrar o rácio positivo mais pequeno
         for i, b in zip(col,table[:-1,-1]):
-            # i cannot equal 0 and b/i must be positive.
+            # i não pode ser igual a 0 e b/i tem de ser positivo.
             if i**2>0 and b/i>0:
                 total.append(b/i)
             else:
-                # placeholder for elements that did not satisfy the above requirements. Otherwise, our index number would be faulty.
+                # espaço reservado para os elementos que não satisfazem os requisitos acima referidos. Caso contrário, o nosso número de índice seria incorrecto.
                 total.append(0)
         element = max(total)
         for t in total:
@@ -76,7 +77,7 @@ def loc_piv_r(table):
 
         index = total.index(element)
         return [index,c]
-# similar process, returns a specific array element to be pivoted on.
+# processo semelhante, devolve um elemento específico da matriz para ser articulado.
 def loc_piv(table):
     if next_round(table):
         total = []
@@ -85,7 +86,7 @@ def loc_piv(table):
             if i**2>0 and b/i>0:
                 total.append(b/i)
             else:
-                # placeholder for elements that did not satisfy the above requirements. Otherwise, our index number would be faulty.
+                # espaço reservado para os elementos que não satisfazem os requisitos acima referidos. Caso contrário, o nosso número de índice seria incorrecto.
                 total.append(0)
         element = max(total)
         for t in total:
@@ -97,7 +98,7 @@ def loc_piv(table):
         index = total.index(element)
         return [index,n]
 
-# Takes string input and returns a list of numbers to be arranged in tableu
+# Recebe uma string de entrada e devolve uma lista de números a serem organizados numa tabela
 def convert(eq):
     eq = eq.split(',')
     if 'G' in eq:
@@ -116,13 +117,13 @@ def convert(eq):
         eq = [float(i) for i in eq]
         return eq
 
-# The final row of the tablue in a minimum problem is the opposite of a maximization problem so elements are multiplied by (-1)
+# A linha final da tabela num problema de mínimo é o oposto de um problema de maximização, pelo que os elementos são multiplicados por (-1)
 def convert_min(table):
     table[-1,:-2] = [-1*i for i in table[-1,:-2]]
     table[-1,-1] = -1*table[-1,-1]
     return table
 
-# generates x1,x2,...xn for the varying number of variables.
+# gera x1,x2,...xn para o número variável de variáveis.
 def gen_var(table):
     lc = len(table[0,:])
     lr = len(table[:,0])
@@ -132,11 +133,11 @@ def gen_var(table):
         v.append('x'+str(i+1))
     return v
 
-# pivots the tableau such that negative elements are purged from the last row and last column
+# dinamiza o quadro de modo a que os elementos negativos sejam eliminados da última linha e da última coluna
 def pivot(row,col,table):
-    # number of rows
+    # número de linhas
     lr = len(table[:,0])
-    # number of columns
+    # número de colunas
     lc = len(table[0,:])
     t = np.zeros((lr,lc))
     pr = table[row,:]
@@ -155,93 +156,93 @@ def pivot(row,col,table):
     else:
         print('Cannot pivot on this element.')
 
-# checks if there is room in the matrix to add another constraint
+# Verifica se há espaço na matriz para adicionar outra restrição
 def add_cons(table):
     lr = len(table[:,0])
-    # want to know IF at least 2 rows of all zero elements exist
+    # pretende saber SE existem pelo menos 2 linhas com todos os elementos nulos
     empty = []
-    # iterate through each row
+    # iterar através de cada linha
     for i in range(lr):
         total = 0
         for j in table[i,:]:
-            # use squared value so (-x) and (+x) don't cancel each other out
+            # utilizar o valor quadrático para que (-x) e (+x) não se anulem um ao outro
             total += j**2
         if total == 0:
-            # append zero to list ONLY if all elements in a row are zero
+            # acrescentar zero à lista APENAS se todos os elementos de uma linha forem zero
             empty.append(total)
-    # There are at least 2 rows with all zero elements if the following is true
+    # Existem pelo menos 2 linhas com todos os elementos nulos se o seguinte for verdadeiro
     if len(empty)>1:
         return True
     else:
         return False
 
-# adds a constraint to the matrix
+#adiciona uma restrição à matriz
 def constrain(table,eq):
     if add_cons(table) == True:
         lc = len(table[0,:])
         lr = len(table[:,0])
         var = lc - lr -1
-        # set up counter to iterate through the total length of rows
+        # configurar o contador para iterar através do comprimento total das linhas
         j = 0
         while j < lr:
-            # Iterate by row
+            # Iterar por linha
             row_check = table[j,:]
-            # total will be sum of entries in row
+            # o total será a soma dos registos na linha
             total = 0
-            # Find first row with all 0 entries
+            # Encontrar a primeira linha com todas as entradas 0
             for i in row_check:
                 total += float(i**2)
             if total == 0:
-                # We've found the first row with all zero entries
+                # Encontrámos a primeira linha com todas as entradas zero
                 row = row_check
                 break
             j +=1
 
         eq = convert(eq)
         i = 0
-        # iterate through all terms in the constraint function, excluding the last
+        # itera através de todos os termos da função de restrição, excluindo o último
         while i<len(eq)-1:
-            # assign row values according to the equation
+            # atribuir valores de linha de acordo com a equação
             row[i] = eq[i]
             i +=1
-        #row[len(eq)-1] = 1
+        #linha[len(eq)-1] = 1
         row[-1] = eq[-1]
 
-        # add slack variable according to location in tableau.
+        # adicionar variável de folga de acordo com a localização no quadro.
         row[var+j] = 1
     else:
         print('Cannot add another constraint.')
 
-# checks to determine if an objective function can be added to the matrix
+# verifica se uma função objectivo pode ser adicionada à matriz
 def add_obj(table):
     lr = len(table[:,0])
-    # want to know IF exactly one row of all zero elements exist
+    # pretende saber SE existe exactamente uma linha com todos os elementos nulos
     empty = []
-    # iterate through each row
+    # iterar através de cada linha
     for i in range(lr):
         total = 0
         for j in table[i,:]:
-            # use squared value so (-x) and (+x) don't cancel each other out
+            # utilizar o valor quadrático para que (-x) e (+x) não se anulem mutuamente
             total += j**2
         if total == 0:
-            # append zero to list ONLY if all elements in a row are zero
+            # acrescentar zero à lista APENAS se todos os elementos de uma linha forem zero
             empty.append(total)
-    # There is exactly one row with all zero elements if the following is true
+    # Existe exactamente uma linha com todos os elementos nulos se o seguinte for verdadeiro
     if len(empty)==1:
         return True
     else:
         return False
 
-# adds the onjective functio nto the matrix.
+# adiciona a função objetiva à matriz.
 def obj(table,eq):
     if add_obj(table)==True:
         eq = [float(i) for i in eq.split(',')]
         lr = len(table[:,0])
         row = table[lr-1,:]
         i = 0
-    # iterate through all terms in the constraint function, excluding the last
+    # itera através de todos os termos da função de restrição, excluindo o último
         while i<len(eq)-1:
-            # assign row values according to the equation
+            # atribuir valores de linha de acordo com a equação
             row[i] = eq[i]*-1
             i +=1
         row[-2] = 1
@@ -249,7 +250,7 @@ def obj(table,eq):
     else:
         print('You must finish adding constraints before the objective function can be added.')
 
-# solves maximization problem for optimal solution, returns dictionary w/ keys x1,x2...xn and max.
+# resolve o problema de maximização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e max.
 def maxz(table, output='summary'):
     while next_round_r(table)==True:
         table = pivot(loc_piv_r(table)[0],loc_piv_r(table)[1],table)
@@ -278,7 +279,7 @@ def maxz(table, output='summary'):
     else:
         return val
 
-# solves minimization problems for optimal solution, returns dictionary w/ keys x1,x2...xn and min.
+# resolve problemas de minimização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e min.
 def minz(table, output='summary'):
     table = convert_min(table)
 
@@ -309,12 +310,33 @@ def minz(table, output='summary'):
     else:
         return val
 
-if __name__ == "__main__":
-    
-    m = gen_matrix(2,3)
-    constrain(m,'0.3,0.1,L,2.7')
-    constrain(m,'0.5,0.5,E,6')
-    constrain(m,'0.6,0.4,G,6')
-    obj(m,'0.4,0.5,0')
-    print(minz(m))
+def plot_solution(m):
+    # Define os valores de x e y
+    x = np.linspace(0, 6, 100)
+    y = np.linspace(0, 8, 100)
 
+    # Cria uma matriz com os pares de valores (x, y)
+    X, Y = np.meshgrid(x, y)
+
+    # Calcula os valores da função objetivo para cada par de valores (x, y)
+    Z = m[0][0] * X + m[0][1] * Y
+
+    # Cria o gráfico de contorno
+    plt.contour(X, Y, Z, levels=[0], colors='r')
+
+    # Adiciona as restrições como linhas retas
+    for constraint in m[1:]:
+        a, b, op, c = constraint
+        equation = f"{a} * x + {b} * y"
+        if op == 'L':
+            plt.plot(x, (c - a * x) / b, label=f"{equation} <= {c}")
+        elif op == 'G':
+            plt.plot(x, (c - a * x) / b, label=f"{equation} >= {c}")
+        elif op == 'E':
+            plt.plot(x, (c - a * x) / b, label=f"{equation} = {c}")
+
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
