@@ -1,12 +1,9 @@
-from pickle import OBJ
 from flask import Flask
 import numpy as np
-#from matplotlib.layout_engine import ConstrainedLayoutEngine
+from matplotlib.layout_engine import ConstrainedLayoutEngine
 
 from backend import gen_matrix, minz, minz_f1, maxz, constrain,obj, plot_solution, add_row
-app = Flask(__name__)
-
-@app.route("/")
+from grafico import plotagraf, formatTable
 
 def main():
     # Solicitar ao usuário os valores para a criação da matriz e as restrições
@@ -50,7 +47,9 @@ def main():
             print(minz(m))
         else:
             print(maxz(m))
-    #plot_solution(m)
+ 
+plotagraf(z, formatTable(restr, b), pp, xlim, xlim)
+plt.show()
 
 main()
 '''
