@@ -372,6 +372,7 @@ def minz_f1(table, output='table'):
     else:
         return val
 
+# adicionar função artificial W
 def add_row(table):
     lc = len(table[0, :])
     lr = len(table[:, 0])
