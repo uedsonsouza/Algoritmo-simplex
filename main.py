@@ -1,28 +1,41 @@
 from flask import Flask
 import numpy as np
-from matplotlib.layout_engine import ConstrainedLayoutEngine
+import matplotlib.pyplot as plt
+#from matplotlib.layout_engine import ConstrainedLayoutEngine
 
-from backend import gen_matrix, minz, minz_f1, maxz, constrain,obj, plot_solution, add_row
+from backend import gen_matrix, minz, minz_f1, maxz, constrain,obj, plot_solution, add_row,convert
 from grafico import plotagraf, formatTable
+app = Flask(__name__)
+
 
 def main():
     # Solicitar ao usuário os valores para a criação da matriz e as restrições
     global add_row, add_W
+    solution=[]
     rows = int(input("Informe o número de variaveis: "))
     cols = int(input("Informe o número de restrições: "))
     
     m = gen_matrix(rows, cols)
+    restr=[]
+    b=[]
     
     num_constraints = cols
     for i in range(num_constraints):
         constraint_str = input(f"Informe a restrição {i+1} (na forma 'a,b,op,c'): ")
-        type_const=constrain(m, constraint_str)
+        type_const, const, b_temp=constrain(m, constraint_str)
+        print(const)
+        restr.append(const)
+        print(restr)
+        print(b_temp)
+
+        b.append([b_temp])
+        print(b)
         add_W=False
         if type_const == 'G' or type_const=='E':
             add_W=True
 
     objective_str = input("Informe a função objetivo (na forma 'a,b,c'): ")
-    obj(m, objective_str)
+    z=obj(m, objective_str)
     type_problem = input("Maximização (max) ou Minimizaçao (min): ")
 
     if add_W:
@@ -47,9 +60,12 @@ def main():
             print(minz(m))
         else:
             print(maxz(m))
- 
-plotagraf(z, formatTable(restr, b), pp, xlim, xlim)
-plt.show()
+
+    pp = [0.5, 0.5]
+    xlim = (-1, 10)
+    print(solution)
+    plotagraf(z, formatTable(restr, b), pp, xlim, xlim,solution)
+    plt.show()
 
 main()
 '''

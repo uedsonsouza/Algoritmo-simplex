@@ -3,14 +3,13 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import numpy as np
 
-
+'''
 z = [3, 5]
 restr = [[1, 0], [0, 2], [3, 2]]
 b = [[4], [12], [18]]
 pp = [0.5, 0.5]
 xlim = (-1, 10)
-
-
+'''
 
 def formatTable(restr, b):
     restr = np.vstack([restr, [[-1, 0], [0, -1]]])
@@ -19,7 +18,7 @@ def formatTable(restr, b):
     return table
 
 
-def plotagraf(z, table, pp, xlim, ylim):
+def plotagraf(z, table, pp, xlim, ylim,solution):
     hs = HalfspaceIntersection(np.array(table), np.array(pp))
     fig = plt.figure()
     ax = fig.add_subplot(aspect='equal')
@@ -50,14 +49,10 @@ def plotagraf(z, table, pp, xlim, ylim):
     ax.add_patch(polygon)
     ax.contour(X, Y, Z, 50)
     ax.plot(x, y, 'o', color="#e67e22")
-    #ax.plot(solution[1],solution[2],'o',color="red")
+    ax.plot(solution[1],solution[2],'o',color="red")
     plt.xlabel('X1')
     plt.ylabel('X2')
     #   fig.savefig('Simplex/scripts/figures/graf.png')
 
     plt.show()
 
-
-
-plotagraf(z, formatTable(restr, b), pp, xlim, xlim)
-plt.show()

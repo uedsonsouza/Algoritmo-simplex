@@ -236,7 +236,9 @@ def constrain(table, eq):
 
     else:
         print('Cannot add another constraint.')
-    return type_const
+    const = eq[0:var]
+    b = eq[-1]
+    return type_const, const, b
 
 
 # verifica se uma função objectivo pode ser adicionada à matriz
@@ -276,6 +278,8 @@ def obj(table, eq):
         row[-1] = eq[-1]
     else:
         print('You must finish adding constraints before the objective function can be added.')
+    #eq=eq.remove(-1)
+    return eq
 
 
 # resolve o problema de maximização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e max.
@@ -311,6 +315,8 @@ def maxz(table, output='summary'):
 
 # resolve problemas de minimização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e min.
 def minz(table, output='summary'):
+    global solution
+
     table = convert_min(table)
 
     while next_round_r(table) == True:
@@ -324,6 +330,7 @@ def minz(table, output='summary'):
     const = lr - 1
     i = 0
     val = {}
+    solution=np.zeros(var)
     for i in range(var):
         col = table[:var+const, i]
         s = sum(col)
@@ -331,6 +338,7 @@ def minz(table, output='summary'):
         if float(s) == float(m):
             loc = np.where(col == m)[0][0]
             val[gen_var(table)[i]] = table[loc, -1]
+            solution[i]=table[loc, -1]
         else:
             val[gen_var(table)[i]] = 0
     val['min'] = table[-1, -1] * -1
