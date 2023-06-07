@@ -49,7 +49,7 @@ def plotagraf(z, table, pp, xlim, ylim,solution):
     ax.add_patch(polygon)
     ax.contour(X, Y, Z, 50)
     ax.plot(x, y, 'o', color="#e67e22")
-    ax.plot(solution[1],solution[2],'o',color="red")
+    ax.plot(solution[0],solution[1],'o',color="red")
     plt.xlabel('X1')
     plt.ylabel('X2')
     #   fig.savefig('Simplex/scripts/figures/graf.png')
