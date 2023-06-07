@@ -7,11 +7,9 @@ from backend import gen_matrix, minz, minz_f1, maxz, constrain,obj, plot_solutio
 from grafico import plotagraf, formatTable
 app = Flask(__name__)
 
-
 def main():
     # Solicitar ao usuário os valores para a criação da matriz e as restrições
     global add_row, add_W
-    solution=[]
     rows = int(input("Informe o número de variaveis: "))
     cols = int(input("Informe o número de restrições: "))
     
@@ -52,18 +50,20 @@ def main():
             i-=1
         print(tab2)
         if type_problem=='min':
-            print(minz(tab2))
+            val,table,solution=minz(tab2)
+            print(val)
+            print(table)
+            print(solution)
         else:
-            print(maxz(tab2))
+            val,table,solution=minz(tab2)
     else:
         if type_problem=='min':
-            print(minz(m))
+            val,table,solution=minz(m)
         else:
-            print(maxz(m))
+            val,table,solution=maxz(m)
 
     pp = [0.5, 0.5]
     xlim = (-1, 10)
-    print(solution)
     plotagraf(z, formatTable(restr, b), pp, xlim, xlim,solution)
     plt.show()
 
