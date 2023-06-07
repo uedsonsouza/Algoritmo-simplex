@@ -295,6 +295,8 @@ def maxz(table, output='summary'):
     const = lc - lr - var - 1
     i = 0
     val = {}
+    solution=np.zeros(var)
+
     for i in range(var):
         col = table[:, i]
         s = sum(col)
@@ -302,6 +304,7 @@ def maxz(table, output='summary'):
         if float(s) == float(m):
             loc = np.where(col == m)[0][0]
             val[gen_var(table)[i]] = table[loc, -1]
+            solution[i]=table[loc, -1]
         else:
             val[gen_var(table)[i]] = 0
     val['max'] = table[-1, -1]
@@ -310,12 +313,12 @@ def maxz(table, output='summary'):
     if output == 'table':
         return table
     else:
-        return val, table
+        return val, table, solution
 
 
 # resolve problemas de minimização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e min.
 def minz(table, output='summary'):
-    global solution
+    #global solution
 
     table = convert_min(table)
 
@@ -347,7 +350,7 @@ def minz(table, output='summary'):
     if output == 'table':
         return table
     else:
-        return val, table
+        return val, table, solution
 
 def minz_f1(table, output='table'):
     #table = convert_min(table)
