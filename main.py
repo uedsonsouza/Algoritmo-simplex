@@ -1,11 +1,8 @@
-from flask import Flask
 import numpy as np
 import matplotlib.pyplot as plt
 #from matplotlib.layout_engine import ConstrainedLayoutEngine
-
-from backend import gen_matrix, minz, minz_f1, maxz, constrain,obj, plot_solution, add_row,convert
+from backend import gen_matrix, minz, minz_f1, maxz, constrain, obj, add_row,convert
 from grafico import plotagraf, formatTable
-app = Flask(__name__)
 
 def main():
     # Solicitar ao usuário os valores para a criação da matriz e as restrições
@@ -64,6 +61,7 @@ def main():
 
     pp = [0.5, 0.5]
     xlim = (-1, 10)
+    print(solution)
     plotagraf(z, formatTable(restr, b), pp, xlim, xlim,solution)
     plt.show()
 
