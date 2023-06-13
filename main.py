@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-#from matplotlib.layout_engine import ConstrainedLayoutEngine
+from matplotlib.layout_engine import ConstrainedLayoutEngine
 from backend import gen_matrix, minz, minz_f1, maxz, constrain, obj, add_row,convert
 from grafico import plotagraf, formatTable
 
@@ -66,13 +66,3 @@ def main():
     plt.show()
 
 main()
-'''
-   m = gen_matrix(2,3)
-    constrain(m,'1,0,L,4')
-    constrain(m,'0,2,L,12')
-    constrain(m,'3,2,L,18')
-    obj(m,'3,5,0')
-    print(maxz(m))
-    plot_func()
-
-''' 
