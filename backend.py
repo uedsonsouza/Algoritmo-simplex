@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 # gera uma matriz vazia com tamanho adequado para variáveis e restrições.
 def gen_matrix(var, cons):
@@ -399,35 +397,3 @@ def add_row(table):
             w = [e1 + e2 for e1, e2 in zip(w, a)]
     table_f1 = np.vstack((table,w))
     return table_f1
-
-
-def plot_solution(m):
-    # Define os valores de x e y
-    x = np.linspace(0, 6, 100)
-    y = np.linspace(0, 8, 100)
-
-    # Cria uma matriz com os pares de valores (x, y)
-    X, Y = np.meshgrid(x, y)
-
-    # Calcula os valores da função objetivo para cada par de valores (x, y)
-    Z = m[0][0] * X + m[0][1] * Y
-
-    # Cria o gráfico de contorno
-    plt.contour(X, Y, Z, levels=[0], colors='r')
-
-    # Adiciona as restrições como linhas retas
-    for constraint in m[1:]:
-        a, b, op, c = constraint
-        equation = f"{a} * x + {b} * y"
-        if op == 'L':
-            plt.plot(x, (c - a * x) / b, label=f"{equation} <= {c}")
-        elif op == 'G':
-            plt.plot(x, (c - a * x) / b, label=f"{equation} >= {c}")
-        elif op == 'E':
-            plt.plot(x, (c - a * x) / b, label=f"{equation} = {c}")
-
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.legend()
-    plt.grid(True)
-    plt.show()

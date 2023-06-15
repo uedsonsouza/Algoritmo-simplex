@@ -15,6 +15,7 @@ def formatTable(restr, b):
     restr = np.vstack([restr, [[-1, 0], [0, -1]]])
     b = np.vstack([np.array(b) * -1, [[0], [0]]])
     table = np.hstack([restr, b])
+    print(table)
     return table
 
 
