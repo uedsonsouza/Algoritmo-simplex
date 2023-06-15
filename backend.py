@@ -110,20 +110,20 @@ def loc_piv(table):
 # Recebe uma string de entrada e devolve uma lista de números a serem organizados numa tabela
 def convert(eq):
     eq = eq.split(',')
-    if 'G' in eq:
-        g = eq.index('G')
+    if '>=' in eq:
+        g = eq.index('>=')
         del eq[g]
         eq = [float(i) for i in eq]
         type_const = "G"
         return eq, type_const
-    if 'L' in eq:
-        l = eq.index('L')
+    if '<=' in eq:
+        l = eq.index('<=')
         del eq[l]
         eq = [float(i) for i in eq]
         type_const = "L"
         return eq, type_const
-    if 'E' in eq:
-        e = eq.index('E')
+    if '=' in eq:
+        e = eq.index('=')
         del eq[e]
         eq = [float(i) for i in eq]
         type_const = "E"
