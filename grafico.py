@@ -3,14 +3,6 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import numpy as np
 
-'''
-z = [3, 5]
-restr = [[1, 0], [0, 2], [3, 2]]
-b = [[4], [12], [18]]
-pp = [0.5, 0.5]
-xlim = (-1, 10)
-'''
-
 def formatTable(restr, b):
     restr = np.vstack([restr, [[-1, 0], [0, -1]]])
     b = np.vstack([np.array(b) * -1, [[0], [0]]])
