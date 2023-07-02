@@ -18,11 +18,19 @@ def update_restricoes_entries():
             restricao_entry = tk.Entry(restricoes_frame)
             restricao_entry.pack()
             restricoes_entries.append(restricao_entry)
+            entry_labels.append(restricao_label)
     elif num_restricoes < num_campos_atuais:
         # Remover campos extras, se necessário
         for _ in range(num_campos_atuais - 1, num_restricoes - 1, -1):
             restricoes_entries[_].destroy()
             restricoes_entries.pop(_)
+            entry_labels[_].destroy()
+            entry_labels.pop(_)
+    
+    # Atualizar numeração das labels
+    for i, entry in enumerate(restricoes_entries):
+        entry_label = entry_labels[i]
+        entry_label.config(text=f"Restrição {i+1}:")
 
 def solve_problem():
     rows = int(variaveis_entry.get())
@@ -105,6 +113,7 @@ restricoes_frame = tk.Frame(janela)
 restricoes_frame.pack()
 
 restricoes_entries = []
+entry_labels = []
 
 adicionar_restricoes_button = tk.Button(janela, text="Adicionar Restrições", command=update_restricoes_entries)
 adicionar_restricoes_button.pack()
