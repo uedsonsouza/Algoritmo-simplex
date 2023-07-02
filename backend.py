@@ -112,19 +112,19 @@ def convert(eq):
         g = eq.index('>=')
         del eq[g]
         eq = [float(i) for i in eq]
-        type_const = ">="
+        type_const = "G"
         return eq, type_const
     if '<=' in eq:
         l = eq.index('<=')
         del eq[l]
         eq = [float(i) for i in eq]
-        type_const = "<="
+        type_const = "L"
         return eq, type_const
     if '=' in eq:
         e = eq.index('=')
         del eq[e]
         eq = [float(i) for i in eq]
-        type_const = "="
+        type_const = "E"
         return eq, type_const
 
 
@@ -289,14 +289,14 @@ def maxz(table, output='summary'):
 
     lc = len(table[0, :])
     lr = len(table[:, 0])
-    var = lc - 2 * lr
-    const = lc - lr - var - 1
+    var = lc - lr - 1
+    const = lr - 1
     i = 0
     val = {}
     solution=np.zeros(var)
 
     for i in range(var):
-        col = table[:, i]
+        col = table[:var+const, i]
         s = sum(col)
         m = max(col)
         if float(s) == float(m):
@@ -391,7 +391,6 @@ def add_row(table):
     for i in range(0, const):
         if table[i, var + const + i] == 1:
             a = [-1 * j for j in table[i, 0:var + const]]
-            print(a)
             a.extend([0*i for i in range(0,lc-(var + const)-1)])
             a.append(-1*table[i, -1])
             w = [e1 + e2 for e1, e2 in zip(w, a)]
