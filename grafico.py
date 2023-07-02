@@ -11,11 +11,10 @@ def formatTable(restr, b):
     return table
 
 
-def plotagraf(z, table, pp, xlim, ylim,solution):
+def plotagraf(z, table, pp, xlim, ylim, solution):
     hs = HalfspaceIntersection(np.array(table), np.array(pp))
     fig = plt.figure()
     ax = fig.add_subplot(aspect='equal')
-
 
     k = np.linspace(-15, 30, 100)
     i = np.linspace(-15, 30, 100)
@@ -27,9 +26,9 @@ def plotagraf(z, table, pp, xlim, ylim,solution):
 
     for h in table:
         if h[1] == 0:
-            ax.axvline(-h[2] / h[0], color="#2c3e50")
+            ax.axvline(-h[2] / h[0], color="#2c3e50", linestyle="--")
         else:
-            ax.plot(x, (-h[2] - h[0] * x) / h[1], color="#2c3e50")
+            ax.plot(x, (-h[2] - h[0] * x) / h[1], color="#2c3e50", linestyle="--")
 
     x, y = zip(*hs.intersections)
     points = list(zip(x, y))
@@ -42,10 +41,13 @@ def plotagraf(z, table, pp, xlim, ylim,solution):
     ax.add_patch(polygon)
     ax.contour(X, Y, Z, 50)
     ax.plot(x, y, 'o', color="#e67e22")
-    ax.plot(solution[0],solution[1],'o',color="red")
+    ax.plot(solution[0], solution[1], 'o', markersize=10, color="red")
+    ax.text(solution[0] + 0.5, solution[1] + 0.5, f'({solution[0]}, {solution[1]})', color="red")
     plt.xlabel('X1')
     plt.ylabel('X2')
+    plt.title('Problema de Pesquisa Operacional')
     #   fig.savefig('Simplex/scripts/figures/graf.png')
 
     plt.show()
+
 
