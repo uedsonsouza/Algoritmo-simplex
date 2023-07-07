@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import numpy as np
 
+'''
+z = [3, 5]
+restr = [[1, 0], [0, 2], [3, 2]]
+b = [[4], [12], [18]]
+pp = [0.5, 0.5]
+xlim = (-1, 10)
+'''
+
 def formatTable(restr, b):
     restr = np.vstack([restr, [[-1, 0], [0, -1]]])
     b = np.vstack([np.array(b) * -1, [[0], [0]]])
@@ -11,10 +19,15 @@ def formatTable(restr, b):
     return table
 
 
-def plotagraf(z, table, pp, xlim, ylim, solution):
+def plotagraf(z, table, pp, xlim, ylim,solution, solucao_inteira):
+    print("coisas q eu mandei printar")
+    print(z)
+    print(table)
+    print(solution)
     hs = HalfspaceIntersection(np.array(table), np.array(pp))
     fig = plt.figure()
     ax = fig.add_subplot(aspect='equal')
+
 
     k = np.linspace(-15, 30, 100)
     i = np.linspace(-15, 30, 100)
@@ -26,9 +39,9 @@ def plotagraf(z, table, pp, xlim, ylim, solution):
 
     for h in table:
         if h[1] == 0:
-            ax.axvline(-h[2] / h[0], color="#2c3e50", linestyle="--")
+            ax.axvline(-h[2] / h[0], color="#2c3e50")
         else:
-            ax.plot(x, (-h[2] - h[0] * x) / h[1], color="#2c3e50", linestyle="--")
+            ax.plot(x, (-h[2] - h[0] * x) / h[1], color="#2c3e50")
 
     x, y = zip(*hs.intersections)
     points = list(zip(x, y))
@@ -37,17 +50,14 @@ def plotagraf(z, table, pp, xlim, ylim, solution):
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
     convex = ConvexHull(points)
-    polygon = Polygon([points[v] for v in convex.vertices], color="#6A95BF")
-    ax.add_patch(polygon)
+    #polygon = Polygon([points[v] for v in convex.vertices], color="#6A95BF")
+    #ax.add_patch(polygon)
     ax.contour(X, Y, Z, 50)
     ax.plot(x, y, 'o', color="#e67e22")
-    ax.plot(solution[0], solution[1], 'o', markersize=10, color="red")
-    ax.text(solution[0] + 0.5, solution[1] + 0.5, f'({solution[0]}, {solution[1]})', color="red")
+    ax.plot(solution[0],solution[1],'o',color="red")
+    ax.plot(solucao_inteira[0], solucao_inteira[1],'o',color="blue")
     plt.xlabel('X1')
     plt.ylabel('X2')
-    plt.title('Problema de Pesquisa Operacional')
-    #   fig.savefig('Simplex/scripts/figures/graf.png')
+    #fig.savefig('Simplex/scripts/figures/graf.png')
 
     plt.show()
-
-

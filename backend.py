@@ -89,6 +89,27 @@ def loc_piv(table):
         total = []
         n = find_neg(table)
         for i, b in zip(table[:-1, n], table[:-1, -1]):
+            if i ** 2 > 0 and b / i >= 0:
+                total.append(b / i)
+            else:
+                # espaço reservado para os elementos que não satisfazem os requisitos acima referidos. Caso contrário, o nosso número de índice seria incorrecto.
+                total.append(-1)
+        element = max(total)
+        for t in total:
+            if t >= 0 and t < element:
+                element = t
+            else:
+                continue
+
+        index = total.index(element)
+        return [index, n]
+
+# processo semelhante, devolve um elemento específico da matriz para ser articulado.
+def loc_pivf1(table):
+    if next_round(table):
+        total = []
+        n = find_neg(table)
+        for i, b in zip(table[:-1, n], table[:-1, -1]):
             if i ** 2 > 0 and b / i > 0:
                 total.append(b / i)
             else:
@@ -103,7 +124,6 @@ def loc_piv(table):
 
         index = total.index(element)
         return [index, n]
-
 
 # Recebe uma string de entrada e devolve uma lista de números a serem organizados numa tabela
 def convert(eq):
@@ -139,7 +159,9 @@ def convert_min(table):
 def gen_var(table):
     lc = len(table[0, :])
     lr = len(table[:, 0])
-    var = lc-2*lr+3
+    #var = lc-2*lr+3
+    var=lc-lr-1
+    print(f'variaveis gen var {var}')
     v = []
     for i in range(var):
         v.append('x' + str(i + 1))
@@ -238,6 +260,50 @@ def constrain(table, eq):
     b = eq[-1]
     return type_const, const, b
 
+def constrainbab(table, eq):
+    if add_cons(table) == True:
+        lc = len(table[0, :])
+        lr = len(table[:, 0])
+        var = lc - 2 * lr
+        const = lc - lr - var - 1
+        # configurar o contador para iterar através do comprimento total das linhas
+        j = 0
+        while j < lr:
+            # Iterar por linha
+            row_check = table[j, :]
+            # o total será a soma dos registos na linha
+            total = 0
+            # Encontrar a primeira linha com todas as entradas 0
+            for i in row_check:
+                total += float(i ** 2)
+            if total == 0:
+                # Encontrámos a primeira linha com todas as entradas zero
+                row = row_check
+                break
+            j += 1
+
+        eq, type_const = convert(eq)
+        i = 0
+        # itera através de todos os termos da função de restrição, excluindo o último
+        while i < len(eq) - 1:
+            # atribuir valores de linha de acordo com a equação
+            row[i] = eq[i]
+            i += 1
+        # linha[len(eq)-1] = 1
+        row[-1] = eq[-1]
+
+        # adicionar variável de folga de acordo com a localização no quadro.
+        if type_const == 'G':
+            row[var + j] = -1
+            row[var + const + j] = 1
+        if type_const == 'L':
+            row[var + j] = 1
+        if type_const == 'E':
+            row[var + const + j] = 1
+
+    else:
+        print('Cannot add another constraint.')
+
 
 # verifica se uma função objectivo pode ser adicionada à matriz
 def add_obj(table):
@@ -283,17 +349,21 @@ def obj(table, eq):
 # resolve o problema de maximização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e max.
 def maxz(table, output='summary'):
     while next_round_r(table) == True:
+        print(table)
         table = pivot(loc_piv_r(table)[0], loc_piv_r(table)[1], table)
     while next_round(table) == True:
+        print(table)
         table = pivot(loc_piv(table)[0], loc_piv(table)[1], table)
 
     lc = len(table[0, :])
     lr = len(table[:, 0])
     var = lc - lr - 1
+    print(var)
     const = lr - 1
     i = 0
     val = {}
     solution=np.zeros(var)
+    print(table)
 
     for i in range(var):
         col = table[:var+const, i]
@@ -301,17 +371,19 @@ def maxz(table, output='summary'):
         m = max(col)
         if float(s) == float(m):
             loc = np.where(col == m)[0][0]
+            print(gen_var(table))
             val[gen_var(table)[i]] = table[loc, -1]
             solution[i]=table[loc, -1]
         else:
             val[gen_var(table)[i]] = 0
     val['max'] = table[-1, -1]
+    z=table[-1, -1]
     for k, v in val.items():
-        val[k] = round(v, 6)
+        val[k] = round(v, 4)
     if output == 'table':
         return table
     else:
-        return val, table, solution
+        return val, table, solution, z
 
 
 # resolve problemas de minimização para obter uma solução óptima, devolve um dicionário com as chaves x1,x2...xn e min.
@@ -343,12 +415,13 @@ def minz(table, output='summary'):
         else:
             val[gen_var(table)[i]] = 0
     val['min'] = table[-1, -1] * -1
+    z=table[-1, -1] * -1
     for k, v in val.items():
         val[k] = round(v, 6)
     if output == 'table':
         return table
     else:
-        return val, table, solution
+        return val, table, solution, z
 
 def minz_f1(table, output='table'):
     #table = convert_min(table)
@@ -356,7 +429,7 @@ def minz_f1(table, output='table'):
     while next_round_r(table) == True:
         table = pivot(loc_piv_r(table)[0], loc_piv_r(table)[1], table)
     while next_round(table) == True:
-        table = pivot(loc_piv(table)[0], loc_piv(table)[1], table)
+        table = pivot(loc_pivf1(table)[0], loc_pivf1(table)[1], table)
 
     lc = len(table[0, :])
     lr = len(table[:, 0])
@@ -396,3 +469,145 @@ def add_row(table):
             w = [e1 + e2 for e1, e2 in zip(w, a)]
     table_f1 = np.vstack((table,w))
     return table_f1
+
+def otimizar(m,type_problem, add_W, rows, cols):
+    if add_W==1:
+        print(m)
+        tab=add_row(m)
+        print(tab)
+        lc = len(tab[0,:])
+        tab1=minz_f1(tab)
+        print(tab1)
+        tab2 = np.delete(tab1,(-1), axis = 0)
+        print(tab2)
+        j=rows+cols
+        i=lc-2
+        while i>j:
+            tab2 = np.delete(tab2, j, axis=1)
+            i-=1
+        
+        print(tab2)
+        if type_problem=='min':
+            val,table,solution,z=minz(tab2)
+            return val, table, solution,z
+            
+        else:
+            val,table,solution,z=maxz(tab2)
+            return val,table,solution,z
+
+    else:
+        lc = len(m[0,:])
+        j=rows+cols
+        i=lc-2
+        while i>j:
+            m = np.delete(m, j, axis=1)
+            i-=1
+
+        if type_problem=='min':
+            val,table,solution,z=minz(m)
+            return val,table,solution,z
+
+        else:
+            val,table,solution,z=maxz(m)
+            return val,table,solution,z
+
+
+def branch_and_bound(solution, zotimo, rows, cols, type_problem, add_W, restricoes, funcao, liminferior):
+    nvar = rows
+    sol = [round(i,4) for i in solution]
+    print(sol)
+    for i in range(0,nvar):
+        if sol[i] != round(sol[i]):
+            pos = i
+            break
+    print(pos)
+    pl1 = round(sol[pos]-0.5)
+    pl2 = round(sol[pos]+0.5)
+    
+    tab1 = gen_matrix(rows, cols+1)
+    tab2 = gen_matrix(rows, cols+1)
+    #cols=cols+1
+
+    print(pl1)
+    print(pl2)
+
+    for r in restricoes:
+        constrainbab(tab1,r)
+
+    if pos==0:      
+        constrainbab(tab1, f'1,0,<=,{pl1}')
+        rest1=f'1,0,<=,{pl1}'
+    else:
+        constrainbab(tab1, f'0,1,<=,{pl1}')
+        rest1=f'0,1,<=,{pl1}'
+    obj(tab1,funcao)
+    print(tab1)
+    cols=cols+1
+    val1,table1,solution1,zpl1=otimizar(tab1, type_problem, add_W, rows, cols)
+    print(table1)
+    print(val1)
+ 
+
+    for r in restricoes:
+        constrainbab(tab2,r)
+
+    if pos==0:      
+        constrainbab(tab2, f'1,0,>=,{pl2}')
+        rest2=f'1,0,>=,{pl2}'
+        add_W=1
+    else:
+        constrainbab(tab2, f'0,1,>=,{pl2}')
+        rest2=f'0,1,>=,{pl2}'
+        add_W=1
+    obj(tab2,funcao)
+    val1,table1,solution2,zpl2=otimizar(tab2, type_problem, add_W, rows, cols)
+
+    solinteira1 = False
+    inte1=0
+    for i in solution1:
+        if i == round(i):
+            inte1=inte1+1
+        if inte1 == nvar:
+            solinteira1 = True
+
+    solinteira2 = False
+    inte2=0
+    for i in solution2:
+        if i == round(i):
+            inte2=inte2+1
+        if inte2 == nvar:
+            solinteira2 = True
+
+    if solinteira1:
+            solint = solution1
+            zint = zpl1
+            liminferior = zint
+            return solint, zint
+    
+    if solinteira2:
+            solint = solution2
+            zint = zpl2
+            liminferior = zint
+            return solint, zint
+    
+    else:
+        if zpl1>=zpl2:
+            restricoes.append(rest1)
+            solinteira, zinteira = branch_and_bound(solution1, zpl1, rows, cols, type_problem, add_W, restricoes, funcao, liminferior)
+            for i in solinteira:
+                if i == round(i):
+                    inte1=inte1+1
+                if inte1 == nvar:
+                    inteira = True
+            if  inteira:
+                return solinteira, zinteira
+        else:
+            restricoes.append(rest2)
+            solinteira, zinteira=branch_and_bound(solution2, zpl2, rows, cols, type_problem, add_W, restricoes, funcao, liminferior)
+            for i in solinteira:
+                if i == round(i):
+                    inte1=inte1+1
+                if inte1 == nvar:
+                    inteira = True
+            if  inteira:
+                return solinteira, zinteira
